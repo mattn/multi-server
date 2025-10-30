@@ -1,0 +1,14 @@
+# syntax=docker/dockerfile:1.4
+
+FROM golang:1.25-alpine AS build-dev
+WORKDIR /go/src/app
+COPY --link go.mod ./
+RUN apk add --no-cache upx || \
+    go version
+COPY --link . .
+RUN CGO_ENABLED=0 go install -buildvcs=false -trimpath -ldflags '-w -s'
+RUN [ -e /usr/bin/upx ] && upx /go/bin/multi-server || echo
+FROM scratch
+COPY --link --from=build-dev /go/bin/multi-server /go/bin/multi-server
+COPY --from=build-dev /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+CMD ["/go/bin/multi-server"]
