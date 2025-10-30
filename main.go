@@ -8,6 +8,12 @@ import (
 	"path/filepath"
 )
 
+const name = "multi-server"
+
+const version = "0.0.0"
+
+var revision = "HEAD"
+
 func main() {
 	const sitesDir = "/data"
 
