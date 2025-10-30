@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -15,7 +16,11 @@ const version = "0.0.1"
 var revision = "HEAD"
 
 func main() {
-	const sitesDir = "/data"
+	var addr string
+	var sitesDir string
+	flag.StringVar(&addr, "addr", ":8080", "Address to listen on")
+	flag.StringVar(&sitesDir, "sites-dir", "/data", "Directory containing site folders")
+	flag.Parse()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		host := r.Host
@@ -32,25 +37,9 @@ func main() {
 		}
 
 		fs := http.FileServer(http.Dir(siteDir))
-		fs = spaFileServer(fs, siteDir)
 		fs.ServeHTTP(w, r)
 	})
 
-	log.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func spaFileServer(next http.Handler, root string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		path := filepath.Join(root, r.URL.Path)
-
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			indexPath := filepath.Join(root, "index.html")
-			if _, err := os.Stat(indexPath); err == nil {
-				http.ServeFile(w, r, indexPath)
-				return
-			}
-		}
-		next.ServeHTTP(w, r)
-	})
+	log.Println("Server starting on " + addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
