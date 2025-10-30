@@ -36,8 +36,7 @@ func main() {
 			return
 		}
 
-		fs := http.FileServer(http.Dir(siteDir))
-		fs.ServeHTTP(w, r)
+		http.FileServer(http.Dir(siteDir)).ServeHTTP(w, r)
 	})
 
 	log.Println("Server starting on " + addr)
