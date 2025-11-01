@@ -39,6 +39,10 @@ func main() {
 		http.FileServer(http.Dir(siteDir)).ServeHTTP(w, r)
 	})
 
+	logger := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Print(r.RemoteAddr + " " + r.Method + " " + r.URL.String())
+		http.DefaultServeMux.ServeHTTP(w, r)
+	})
 	log.Println("Server starting on " + addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, logger))
 }
