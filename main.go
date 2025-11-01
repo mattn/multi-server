@@ -41,7 +41,13 @@ func main() {
 	})
 
 	logger := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Print(r.RemoteAddr + " " + r.Method + " " + r.URL.String())
+		ip := r.RemoteAddr
+		if realIP := r.Header.Get("X-Forwarded-For"); realIP != "" {
+			ip = realIP // possible to be multiple comma separated
+		} else if realIP := r.Header.Get("X-Real-Ip"); realIP != "" {
+			ip = realIP
+		}
+		log.Print(ip + " " + r.Method + " " + r.URL.String())
 		http.DefaultServeMux.ServeHTTP(w, r)
 	})
 	log.Println("Server starting on " + addr)
