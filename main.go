@@ -11,7 +11,7 @@ import (
 
 const name = "multi-server"
 
-const version = "0.0.3"
+const version = "0.0.4"
 
 var revision = "HEAD"
 
