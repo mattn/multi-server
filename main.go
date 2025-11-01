@@ -36,6 +36,7 @@ func main() {
 			return
 		}
 
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		http.FileServer(http.Dir(siteDir)).ServeHTTP(w, r)
 	})
 
